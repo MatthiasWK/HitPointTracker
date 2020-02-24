@@ -1,6 +1,6 @@
 package com.matthias.hitpointtracker;
 
-class PlayerRace {
+class CharacterRace {
     protected String RaceName = "Default";
     protected int HPModifier = 0;
 

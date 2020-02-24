@@ -1,6 +1,6 @@
 package com.matthias.hitpointtracker;
 
-public class PlayerClass {
+public class CharacterClass {
     protected int hitDice = 0;
     protected String ClassName = "Default";
 

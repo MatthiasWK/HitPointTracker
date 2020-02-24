@@ -1,13 +1,15 @@
 package com.matthias.hitpointtracker;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayerCharacter {
     private String name = "Default";
     private int conModifier = 0;
-    private int hitPoints = 0;
-    private ArrayList<PlayerClass> playerClass = new ArrayList<PlayerClass>();
-    private PlayerRace playerRace = new PlayerRace();
+    private int maxHP = 0;
+    private int currentHP = 0;
+    private ArrayList<CharacterClass> characterClasses = new ArrayList<>(); //To Do: change to list of tuples "(class, level)"
+    private CharacterRace characterRace = new CharacterRace();
 
     public String getName(){
         return name;
@@ -17,12 +19,20 @@ public class PlayerCharacter {
         name = newName;
     }
 
-    public int getHP() {
-        return hitPoints;
+    public int getMaxHP() {
+        return maxHP;
     }
 
-    public void setHP(int hitPoints) {
-        this.hitPoints = hitPoints;
+    public void setMaxHP(int hitPoints) {
+        this.maxHP = hitPoints;
+    }
+
+    public int getCurrentHP() {
+        return currentHP;
+    }
+
+    public void setCurrentHP(int hitPoints) {
+        this.currentHP = hitPoints;
     }
 
     public int getConModifier() {
@@ -33,53 +43,79 @@ public class PlayerCharacter {
         this.conModifier = conModifier;
     }
 
-    public ArrayList<PlayerClass> getPlayerClass() {
-        return playerClass;
+    public ArrayList<CharacterClass> getCharacterClasses() {
+        return characterClasses;
     }
 
-    public void setPlayerClass(ArrayList<PlayerClass> playerClass) {
-        this.playerClass = playerClass;
+    public void setCharacterClasses(ArrayList<CharacterClass> characterClasses) {
+        this.characterClasses = characterClasses;
     }
 
-    public PlayerRace getPlayerRace() {
-        return playerRace;
+    public CharacterRace getCharacterRace() {
+        return characterRace;
     }
 
-    public void setPlayerRace(PlayerRace playerRace) {
-        this.playerRace = playerRace;
+    public void setCharacterRace(CharacterRace characterRace) {
+        this.characterRace = characterRace;
+    }
+
+    public void regainAllHP(){
+        currentHP = maxHP;
     }
 
     public void loseHP(int lostHP) {
-        hitPoints = Math.max(0, hitPoints - lostHP);
+        currentHP = Math.max(0, currentHP - lostHP);
     }
 
     public void gainHP(int gainedHP) {
-        hitPoints += gainedHP;
+        currentHP += gainedHP;
     }
 
-    public int CalculateHPAverage() {
-        int result = 0;
-        if(playerClass.size() > 0){
-            result = playerClass.get(0).getHitDice();
-            playerClass.remove(0);
-            for (PlayerClass pc: playerClass) {
-                int hd = pc.getHitDice();
-                int averageHitDice = (int)Math.ceil((1+hd)*0.5);
-                result += averageHitDice;
-            }
+    public int getAverageMaxHP() {
+        int result = getFirstLevelHP();
+
+        for (int i = 1; i < characterClasses.size(); i++) {
+            int hitDice = characterClasses.get(i).getHitDice();
+            result += getAverageHitDiceRoll(hitDice);
         }
+
         return result;
     }
 
-    public int CalculateHPRandom() {
-        int result = 0;
-        if(playerClass.size() > 0){
-            result = playerClass.get(0).getHitDice();
-            playerClass.remove(0);
-            for (PlayerClass pc: playerClass) {
-                //To Do: Implement
-            }
+    public int getRandomMaxHP() {
+        int result = getFirstLevelHP();
+
+        for (int i = 1; i < characterClasses.size(); i++) {
+            int hitDice = characterClasses.get(i).getHitDice();
+            result += getRandomHitDiceRoll(hitDice) + characterRace.getHPModifier();
         }
+
         return result;
+    }
+
+    public int getFirstLevelHP(){
+        if(characterClasses.size() < 1)
+            throw new ArrayIndexOutOfBoundsException("no Character Class has been set");
+
+        CharacterClass cc = characterClasses.get(0);
+        return cc.getHitDice() + conModifier + characterRace.getHPModifier();
+    }
+
+    public int getAverageHitDiceRoll(int hitDice){
+        int averageHitDice = (int)Math.ceil((1+hitDice)*0.5);
+        return averageHitDice + conModifier;
+    }
+
+    public int getRandomHitDiceRoll(int hitDice){
+        int randomHitDice = getRandomNumberInRange(1, hitDice);
+        return randomHitDice + conModifier;
+    }
+
+    private static int getRandomNumberInRange(int min, int max) {
+        if (min >= max)
+            throw new IllegalArgumentException("max must be greater than min");
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 }
