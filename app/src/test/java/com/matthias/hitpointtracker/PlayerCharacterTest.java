@@ -79,4 +79,5 @@ public class PlayerCharacterTest {
         System.out.println(hp);
         assertTrue(hp >= min && hp <= max);
     }
+
 }
