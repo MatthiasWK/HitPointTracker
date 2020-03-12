@@ -1,7 +1,7 @@
 package com.matthias.hitpointtracker;
 
 import java.util.Random;
-
+// To Do: make ClassLevel Class, add Class and Race Factories
 public abstract class Character {
     protected String name = "Default";
     protected int conModifier = 0;
